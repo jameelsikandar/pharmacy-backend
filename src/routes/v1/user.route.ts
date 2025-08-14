@@ -3,8 +3,8 @@ import {
     registerUser,
     loginUser,
     logoutUser,
-} from "../controllers/user.controller";
-import { verifyJWT } from "../middlewares/auth.middleware";
+} from "../controllers/v1/user.controller";
+import { verifyJWT } from "../middlewares/v1/auth.middleware";
 
 const router = Router();
 

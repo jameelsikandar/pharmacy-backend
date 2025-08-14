@@ -1,7 +1,7 @@
 // src/controllers/medicine.controller.ts
 import type { Request, Response } from "express";
-import { Medicine } from "../models/medicine.model";
-import { ApiResponse } from "../utils/ApiResponse";
+import { Medicine } from "../../models/medicine.model";
+import { ApiResponse } from "../../utils/ApiResponse";
 
 export const addMedicine = async (req: Request, res: Response) => {
     try {

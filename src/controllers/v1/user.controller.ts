@@ -1,12 +1,15 @@
 import type { Request, Response } from "express";
-import { User } from "../models/user.models";
-import { registerUserSchema, loginSchema } from "../validators/user.validator";
-import { generateToken } from "../utils/jwt";
-import { asyncHandler } from "../utils/asyncHandler";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
+import { User } from "../../models/user.models";
+import {
+    registerUserSchema,
+    loginSchema,
+} from "../../validators/user.validator";
+import { generateToken } from "../../utils/jwt";
+import { asyncHandler } from "../../utils/asyncHandler";
+import { ApiError } from "../../utils/ApiError";
+import { ApiResponse } from "../../utils/ApiResponse";
 import type { Types } from "mongoose";
-import { ENV } from "../config/env.config";
+import { ENV } from "../../config/env.config";
 import type { ZodError } from "zod";
 import { z } from "zod";
 

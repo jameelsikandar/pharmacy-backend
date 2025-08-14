@@ -1,10 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { verifyToken } from "../utils/jwt";
-import { User } from "../models/user.models";
-import { ENV } from "../config/env.config";
-import { asyncHandler } from "../utils/asyncHandler";
-import { ApiError } from "../utils/ApiError";
+import { verifyToken } from "../../utils/jwt";
+import { User } from "../../models/user.models";
+import { ENV } from "../../config/env.config";
+import { asyncHandler } from "../../utils/asyncHandler";
+import { ApiError } from "../../utils/ApiError";
 
 interface AuthenticatedRequest extends Request {
     user?: {
