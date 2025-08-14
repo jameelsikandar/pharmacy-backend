@@ -2,9 +2,9 @@ import express, { type Application } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { ENV } from "./config/env.config";
-import { globalErrorHandler } from "./middlewares/globalErrorHandler";
-import userRouter from "./routes/user.route";
-import medicineRouter from "./routes/medicine.route";
+import { globalErrorHandler } from "./middlewares/shared/globalErrorHandler";
+import userRouter from "./routes/v1/user.route";
+import medicineRouter from "./routes/v1/medicine.route";
 
 const app: Application = express();
 
