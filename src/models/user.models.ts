@@ -9,7 +9,8 @@ const userSchema = new Schema<IUser>(
             required: true,
         },
         avatar: {
-            type: String,
+            public_id: { type: String },
+            secure_url: { type: String },
         },
         email: {
             type: String,
