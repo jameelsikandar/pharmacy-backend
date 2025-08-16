@@ -1,13 +1,13 @@
 import type { Request } from "express";
 import { Types } from "mongoose";
-import type { Avatar } from "./IAvatar";
+import type { IImage } from "./IImage";
 
 export interface AuthenticatedRequest extends Request {
     user?: {
         _id: Types.ObjectId;
         fullName: string;
         email: string;
-        avatar?: Avatar;
+        avatar?: IImage;
         contact?: string;
     };
 }
