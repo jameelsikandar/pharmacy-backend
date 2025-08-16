@@ -1,10 +1,10 @@
 import { Document, Types } from "mongoose";
-import type { Avatar } from "../shared/IAvatar";
+import type { IImage } from "../shared/IImage";
 
 interface IUserBase extends Document {
     _id: Types.ObjectId;
     fullName: string;
-    avatar?: Avatar;
+    avatar?: IImage;
     email: string;
     password: string;
     contact?: string;
