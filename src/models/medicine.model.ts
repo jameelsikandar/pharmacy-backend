@@ -30,7 +30,8 @@ const medicineSchema = new Schema<IMedicine>(
             trim: true,
         },
         image: {
-            type: String,
+            public_id: { type: String },
+            secure_url: { type: String },
         },
         supplierID: {
             type: Schema.Types.ObjectId,
@@ -42,6 +43,9 @@ const medicineSchema = new Schema<IMedicine>(
     }
 );
 
-medicineSchema.index({ name: "text", category: "text" });
+medicineSchema.index(
+    { name: 1, category: 1, dosage: 1, supplierID: 1 },
+    { unique: true }
+);
 
 export const Medicine = mongoose.model<IMedicine>("Medicine", medicineSchema);
