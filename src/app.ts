@@ -28,7 +28,7 @@ app.use(
 app.use('/api/v1/user', userRouter);
 
 //medicine route
-app.use('/api/v1/medicine', medicineRouter);
+app.use('/api/v1/medicines', medicineRouter);
 
 app.use(globalErrorHandler);
 
