@@ -1,16 +1,12 @@
 import { z } from "zod";
-
-const avatarSchema = z.object({
-    public_id: z.string(),
-    secure_url: z.url(),
-});
+import { imageSchema } from "./shared/imageSchema";
 
 const registerUserSchema = z.object({
     fullName: z.string().min(2, "Name must be atleast 2 characters long"),
     email: z.email("Invalid email address"),
     password: z.string().min(6, "Password must be atleast 6 characters long"),
     contact: z.string().optional(),
-    avatar: avatarSchema.optional(),
+    avatar: imageSchema.optional(),
 });
 
 const updateUserSchema = z.object({
@@ -20,7 +16,7 @@ const updateUserSchema = z.object({
         .optional(),
     email: z.email("Invalid email address").optional(),
     contact: z.string().optional(),
-    avatar: avatarSchema.optional(),
+    avatar: imageSchema.optional(),
 });
 
 const loginSchema = z.object({
