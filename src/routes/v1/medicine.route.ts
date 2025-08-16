@@ -1,11 +1,25 @@
-import express, { Router } from "express";
-import { addMedicine } from "../controllers/v1/medicine.controller";
-import { verifyJWT } from "../middlewares/v1/auth.middleware";
-import { addMedicineSchema } from "../validators/medicine.validator";
+import express, { Router } from 'express';
+import { authGuard } from '../../middlewares/v1/auth.guard';
+import {
+    addMedicine,
+    updateMedicine,
+    getMedicine,
+    deleteMedicine,
+} from '../../controllers/v1/medicine.controller';
+import { upload } from '../../middlewares/shared/multer.middleware';
 
 const router = Router();
 
+// ------- protected troutes --------
 //add medicine
-router.route("/add-medicine").post(verifyJWT, addMedicine);
+router.route('/add-medicine').post(authGuard, upload.single('image'), addMedicine);
 
+// update medicine
+router.route('/update/:medicineID').patch(authGuard, upload.single('image'), updateMedicine);
+
+// get medicine details
+router.route('/profile/:medicineID').get(authGuard, getMedicine);
+
+// delete medicine
+router.route('/delete/:medicineID').delete(authGuard, deleteMedicine);
 export default router;
