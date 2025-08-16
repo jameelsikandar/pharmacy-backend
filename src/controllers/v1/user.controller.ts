@@ -16,7 +16,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import type { Types } from "mongoose";
-import { cookieOptions } from "../../constants/cookies.constants";
+import { COOKIE_OPTIONS } from "../../constants/constants";
 import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
 import fs from "fs";
 import type { AuthenticatedRequest } from "../../types/shared/IAuthenticatedRequest";
@@ -68,7 +68,7 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
 
     const token = generateToken((user._id as Types.ObjectId).toString());
 
-    res.cookie("token", token, cookieOptions);
+    res.cookie("token", token, COOKIE_OPTIONS);
     return new ApiResponse(
         200,
         {
@@ -82,7 +82,6 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 // update user
-
 const updateUser = asyncHandler(
     async (req: AuthenticatedRequest, res: Response) => {
         const data = validateDto<UpdateUser>(updateUserSchema, req.body);
@@ -127,11 +126,22 @@ const updateUser = asyncHandler(
     }
 );
 
+//get user profile
+const getUserProfile = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response) => {
+        return new ApiResponse(
+            200,
+            req.user,
+            "User profile fetched successfully!"
+        ).send(res);
+    }
+);
+
 // logout user
 const logoutUser = asyncHandler(async (req: Request, res: Response) => {
-    res.clearCookie("token", { ...cookieOptions, maxAge: 0 });
+    res.clearCookie("token", { ...COOKIE_OPTIONS, maxAge: 0 });
 
     return new ApiResponse(200, {}, "Logout successfully!").send(res);
 });
 
-export { registerUser, loginUser, logoutUser, updateUser };
+export { registerUser, loginUser, logoutUser, updateUser, getUserProfile };
