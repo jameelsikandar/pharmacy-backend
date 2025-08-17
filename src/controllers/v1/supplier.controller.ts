@@ -14,6 +14,21 @@ import fs from "fs/promises";
 const addSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const data = validateDto<AddSupplier>(addSupplierSchema, req.body);
 
+    const existingSupplier = await Supplier.findOne({
+        $or: [
+            {
+                email: data.email,
+            },
+            {
+                licenseNumber: data.licenseNumber,
+            },
+        ],
+    });
+
+    if (existingSupplier) {
+        throw new ApiError(409, "Supplier already exists");
+    }
+
     if (req.file) {
         const response = await uploadToCloudinary(req.file.path);
         if (!response || !response.secure_url) {
@@ -42,12 +57,12 @@ const addSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response
                 licenseNumber: supplier.licenseNumber,
                 address: supplier.address,
             },
-            "Supplier addded successfully!",
+            "Supplier added successfully!",
         ).send(res);
     } catch (error: any) {
         if (error.code === 11000) {
             const field = Object.keys(error.keyValue)[0];
-            throw new ApiError(409, `${field} already exists!`);
+            throw new ApiError(409, `${field} already exists`);
         }
         throw new ApiError(400, "Error while adding supplier");
     }
