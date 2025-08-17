@@ -3,29 +3,32 @@ import type { IClient } from "../types/models/IClient";
 
 const clientSchema = new Schema<IClient>(
     {
-        name: {
+        fullName: {
             type: String,
             required: true,
             trim: true,
         },
-        phone: {
+        contact: {
             type: String,
             required: true,
             trim: true,
+            unique: true,
         },
         avatar: {
-            type: String,
+            public_id: { type: String },
+            secure_url: { type: String },
         },
         email: {
             type: String,
             trim: true,
             lowercase: true,
             match: [/^\S+@\S+\.\S+$/, "Please provide a valid email address"],
+            unique: true,
         },
     },
     {
         timestamps: true,
-    }
+    },
 );
 
 export const Client = mongoose.model<IClient>("Client", clientSchema);

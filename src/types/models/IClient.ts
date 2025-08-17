@@ -1,9 +1,10 @@
 import { Document } from "mongoose";
+import type { IImage } from "../shared/IImage";
 
 interface IClientBase extends Document {
-    name: string;
-    phone: string;
-    avatar?: string;
+    fullName: string;
+    contact: string;
+    avatar?: IImage;
     email?: string;
 }
 
