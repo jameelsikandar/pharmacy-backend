@@ -1,11 +1,12 @@
-import express, { type Application } from 'express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import { ENV } from './config/env.config';
-import { globalErrorHandler } from './middlewares/shared/globalErrorHandler';
-import userRouter from './routes/v1/user.route';
-import medicineRouter from './routes/v1/medicine.route';
-import supplierRouter from './routes/v1/supplier.route';
+import express, { type Application } from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import { ENV } from "./config/env.config";
+import { globalErrorHandler } from "./middlewares/shared/globalErrorHandler";
+import userRouter from "./routes/v1/user.route";
+import medicineRouter from "./routes/v1/medicine.route";
+import supplierRouter from "./routes/v1/supplier.route";
+import clientRouter from "./routes/v1/client.route";
 
 const app: Application = express();
 
@@ -27,13 +28,16 @@ app.use(
 );
 
 // user routes
-app.use('/api/v1/user', userRouter);
+app.use("/api/v1/user", userRouter);
 
 // medicine route
-app.use('/api/v1/medicines', medicineRouter);
+app.use("/api/v1/medicines", medicineRouter);
 
 // supplier routes
-app.use('/api/v1/suppliers', supplierRouter);
+app.use("/api/v1/suppliers", supplierRouter);
+
+// client routes
+app.use("/api/v1/clients", clientRouter);
 
 app.use(globalErrorHandler);
 
