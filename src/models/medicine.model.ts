@@ -3,7 +3,7 @@ import type { IMedicine } from "../types/models/IMedicine";
 
 const medicineSchema = new Schema<IMedicine>(
     {
-        name: {
+        fullName: {
             type: String,
             required: true,
             trim: true,
@@ -40,12 +40,9 @@ const medicineSchema = new Schema<IMedicine>(
     },
     {
         timestamps: true,
-    }
+    },
 );
 
-medicineSchema.index(
-    { name: 1, category: 1, dosage: 1, supplierID: 1 },
-    { unique: true }
-);
+medicineSchema.index({ name: 1, category: 1, dosage: 1, supplierID: 1 }, { unique: true });
 
 export const Medicine = mongoose.model<IMedicine>("Medicine", medicineSchema);

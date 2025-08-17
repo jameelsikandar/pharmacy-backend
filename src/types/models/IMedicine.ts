@@ -4,7 +4,7 @@ import type { IImage } from "../shared/IImage";
 type MedicineCategory = "Tablet" | "Capsule" | "Syrup" | "Injection";
 
 interface IMedicineBase extends Document {
-    name: string;
+    fullName: string;
     price: number;
     stock: number;
     dosage: string;

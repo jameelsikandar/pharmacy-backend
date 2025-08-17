@@ -1,8 +1,8 @@
-import type { Schema, Document } from 'mongoose';
-import type { IImage } from '../shared/IImage';
+import type { Schema, Document } from "mongoose";
+import type { IImage } from "../shared/IImage";
 
 export interface ISupplier extends Document {
-    name: string;
+    fullName: string;
     email: string;
     address: string;
     avatar: IImage;

@@ -3,7 +3,7 @@ import type { ISupplier } from "../types/models/ISupplier";
 
 const supplierSchema = new Schema<ISupplier>(
     {
-        name: { type: String, required: true, trim: true },
+        fullName: { type: String, required: true, trim: true },
         email: { type: String, required: true, trim: true, unique: true },
         avatar: { public_id: { type: String }, secure_url: { type: String } },
         address: { type: String, required: true },

@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import mongoose from "mongoose";
 import { Medicine } from "../../models/medicine.model";
 import type { AddMedicine, UpdateMedicine } from "../../validators/medicine.validator";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -22,26 +23,11 @@ const listMedicines = asyncHandler(async (req: AuthenticatedRequest, res: Respon
 });
 
 //  add medicine to db
-const addMedicine = asyncHandler(async (req: Request, res: Response) => {
+const addMedicine = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const data = validateDto<AddMedicine>(addMedicineSchema, req.body);
 
-    if (req.file) {
-        const response = await uploadToCloudinary(req.file.path);
-        if (!response || !response.secure_url) {
-            throw new ApiError(500, "Image uploading to cloudinary failed!");
-        }
-
-        data.image = {
-            public_id: response.public_id,
-            secure_url: response.secure_url,
-        };
-
-        await fs.unlink(req.file.path).catch((err) => {
-            console.log("Error while deleting file from server", err);
-        });
-    }
     const uniqueQuery = {
-        name: data.name,
+        fullName: data.fullName,
         category: data.category,
         dosage: data.dosage,
         supplierID: data.supplierID,
@@ -49,8 +35,23 @@ const addMedicine = asyncHandler(async (req: Request, res: Response) => {
 
     const exists = await Medicine.exists(uniqueQuery);
 
-    if (exists) {
-        throw new ApiError(409, "Medicine already exists!");
+    if (exists && req.file?.path) {
+        await fs
+            .unlink(req.file.path)
+            .catch((err) => console.error(`Failed to delete file: ${err.message}`));
+        throw new ApiError(409, "Medicine already exists");
+    }
+
+    if (req.file) {
+        const response = await uploadToCloudinary(req.file.path);
+        if (!response || !response.secure_url) {
+            throw new ApiError(400, "Image uploading to cloudinary failed!");
+        }
+
+        data.image = {
+            public_id: response.public_id,
+            secure_url: response.secure_url,
+        };
     }
 
     const medicine = await Medicine.create(data);
@@ -107,8 +108,8 @@ const updateMedicine = asyncHandler(async (req: AuthenticatedRequest, res: Respo
 const getMedicine = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const { medicineID } = req.params;
 
-    if (!medicineID) {
-        throw new ApiError(400, "No medicine id.");
+    if (!medicineID || !mongoose.isValidObjectId(medicineID)) {
+        throw new ApiError(400, "Invalid medicine ID");
     }
 
     const medicine = await Medicine.findById(medicineID);
@@ -124,6 +125,10 @@ const getMedicine = asyncHandler(async (req: AuthenticatedRequest, res: Response
 const deleteMedicine = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const { medicineID } = req.params;
 
+    if (!medicineID || !mongoose.isValidObjectId(medicineID)) {
+        throw new ApiError(400, "Invalid medicine ID");
+    }
+
     const medicine = await Medicine.findByIdAndDelete(medicineID);
 
     if (!medicine) {
@@ -131,11 +136,11 @@ const deleteMedicine = asyncHandler(async (req: AuthenticatedRequest, res: Respo
     }
 
     return new ApiResponse(
-        204,
+        200,
         {
-            "Name: ": medicine.name,
-            "Category: ": medicine.category,
-            "Image: ": medicine.image?.secure_url,
+            fullName: medicine.fullName,
+            category: medicine.category,
+            image: medicine.image?.secure_url,
         },
         "Medicine deleted successfully!",
     ).send(res);

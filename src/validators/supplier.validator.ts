@@ -3,7 +3,7 @@ import { imageSchema } from "./shared/imageSchema";
 
 // add supliers schema
 const addSupplierSchema = z.object({
-    name: z.string().min(3, "Name must be minimum 3 characters").trim(),
+    fullName: z.string().min(3, "Name must be minimum 3 characters").trim(),
     email: z.email().lowercase().trim(),
     avatar: imageSchema.optional(),
     address: z.string(),
@@ -13,7 +13,7 @@ const addSupplierSchema = z.object({
 
 // update suppliers schema
 const updateSupplierSchema = z.object({
-    name: z.string().min(3, "Name must be minimum 3 characters").trim().optional(),
+    fullName: z.string().min(3, "Name must be minimum 3 characters").trim().optional(),
     email: z.email().lowercase().trim().optional(),
     avatar: imageSchema.optional(),
     address: z.string().optional(),

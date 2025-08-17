@@ -1,6 +1,7 @@
 import type { Response } from "express";
 import type { AuthenticatedRequest } from "../../types/shared/IAuthenticatedRequest";
 import type { AddSupplier, UpdateSupplier } from "../../validators/supplier.validator";
+import mongoose from "mongoose";
 import { Supplier } from "../../models/supplier.model";
 import { addSupplierSchema, updateSupplierSchema } from "../../validators/supplier.validator";
 import { ApiError } from "../../utils/ApiError";
@@ -25,11 +26,14 @@ const addSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response
         ],
     });
 
-    if (existingSupplier) {
+    if (existingSupplier && req.file?.path) {
+        await fs
+            .unlink(req.file.path)
+            .catch((err) => console.error(`Failed to delete file: ${err.message}`));
         throw new ApiError(409, "Supplier already exists");
     }
 
-    if (req.file) {
+    if (req.file?.path) {
         const response = await uploadToCloudinary(req.file.path);
         if (!response || !response.secure_url) {
             throw new ApiError(400, "Error while uploading image to cloudinary");
@@ -50,7 +54,7 @@ const addSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response
         return new ApiResponse(
             201,
             {
-                name: supplier.name,
+                fullName: supplier.fullName,
                 email: supplier.email,
                 contact: supplier.contact,
                 avatar: supplier.avatar?.secure_url,
@@ -72,6 +76,10 @@ const addSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response
 const updateSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const data = validateDto<UpdateSupplier>(updateSupplierSchema, req.body);
     const { supplierID } = req.params;
+
+    if (!supplierID || !mongoose.isValidObjectId(supplierID)) {
+        throw new ApiError(400, "Invalid supplier ID");
+    }
 
     if (req.file) {
         const response = await uploadToCloudinary(req.file.path);
@@ -105,6 +113,10 @@ const updateSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Respo
 const getSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const { supplierID } = req.params;
 
+    if (!supplierID || !mongoose.isValidObjectId(supplierID)) {
+        throw new ApiError(400, "Invalid supplier ID");
+    }
+
     const supplier = await Supplier.findById(supplierID);
 
     if (!supplier) {
@@ -114,9 +126,9 @@ const getSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response
     return new ApiResponse(
         200,
         {
-            name: supplier.name,
+            fullName: supplier.fullName,
             email: supplier.email,
-            avatar: supplier.avatar.secure_url,
+            avatar: supplier.avatar?.secure_url,
             address: supplier.address,
             licenseNumber: supplier.licenseNumber,
         },
@@ -127,6 +139,10 @@ const getSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response
 // delete supplier
 const deleteSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const { supplierID } = req.params;
+
+    if (!supplierID || !mongoose.isValidObjectId(supplierID)) {
+        throw new ApiError(400, "Invalid supplier ID");
+    }
 
     const supplier = await Supplier.findByIdAndDelete(supplierID);
 
