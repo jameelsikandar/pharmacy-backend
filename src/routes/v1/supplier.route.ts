@@ -1,5 +1,10 @@
 import express, { Router } from "express";
-import { addSupplier, updateSupplier, getSupplier } from "../../controllers/v1/supplier.controller";
+import {
+    addSupplier,
+    updateSupplier,
+    getSupplier,
+    deleteSupplier,
+} from "../../controllers/v1/supplier.controller";
 import { authGuard } from "../../middlewares/v1/auth.guard";
 import { upload } from "../../middlewares/shared/multer.middleware";
 
@@ -13,5 +18,8 @@ router.route("/update/:supplierID").patch(authGuard, upload.single("avatar"), up
 
 // get supplier details
 router.route("/:supplierID").get(authGuard, getSupplier);
+
+//delete supplier
+router.route("/delete/:supplierID").delete(authGuard, deleteSupplier);
 
 export default router;

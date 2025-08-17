@@ -121,4 +121,23 @@ const getSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response
     ).send(res);
 });
 
-export { addSupplier, updateSupplier, getSupplier };
+// delete supplier
+const deleteSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { supplierID } = req.params;
+
+    const supplier = await Supplier.findByIdAndDelete(supplierID);
+
+    if (!supplier) {
+        throw new ApiError(404, "Supplier not found!");
+    }
+
+    return new ApiResponse(
+        200,
+        {
+            deletedSupplier: supplier,
+        },
+        "Supplier deleted successfully!",
+    ).send(res);
+});
+
+export { addSupplier, updateSupplier, getSupplier, deleteSupplier };
