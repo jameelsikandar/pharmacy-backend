@@ -30,39 +30,27 @@ const addSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Response
         });
     }
 
-    const existingSupplier = await Supplier.findOne({
-        $or: [
+    try {
+        const supplier = await Supplier.create(data);
+        return new ApiResponse(
+            201,
             {
-                email: data.email,
+                name: supplier.name,
+                email: supplier.email,
+                contact: supplier.contact,
+                avatar: supplier.avatar?.secure_url,
+                licenseNumber: supplier.licenseNumber,
+                address: supplier.address,
             },
-            {
-                licenseNumber: data.licenseNumber,
-            },
-        ],
-    });
-
-    if (existingSupplier) {
-        throw new ApiError(409, "Supplier already exists");
-    }
-
-    const supplier = await Supplier.create(data);
-
-    if (!supplier) {
+            "Supplier addded successfully!",
+        ).send(res);
+    } catch (error: any) {
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue)[0];
+            throw new ApiError(409, `${field} already exists!`);
+        }
         throw new ApiError(400, "Error while adding supplier");
     }
-
-    return new ApiResponse(
-        201,
-        {
-            name: supplier.name,
-            email: supplier.email,
-            contact: supplier.contact,
-            avatar: supplier.avatar?.secure_url,
-            licenseNumber: supplier.licenseNumber,
-            address: supplier.address,
-        },
-        "Supplier addded successfully!",
-    ).send(res);
 });
 
 // update supplier
