@@ -5,6 +5,7 @@ import { ENV } from './config/env.config';
 import { globalErrorHandler } from './middlewares/shared/globalErrorHandler';
 import userRouter from './routes/v1/user.route';
 import medicineRouter from './routes/v1/medicine.route';
+import supplierRouter from './routes/v1/supplier.route';
 
 const app: Application = express();
 
@@ -25,10 +26,14 @@ app.use(
     }),
 );
 
+// user routes
 app.use('/api/v1/user', userRouter);
 
-//medicine route
+// medicine route
 app.use('/api/v1/medicines', medicineRouter);
+
+// supplier routes
+app.use('/api/v1/suppliers', supplierRouter);
 
 app.use(globalErrorHandler);
 
