@@ -9,6 +9,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import { validateDto } from "../../utils/validateDto";
 import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
 import fs from "fs/promises";
+import mongoose from "mongoose";
 
 // add clients
 const addClient = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
@@ -66,4 +67,98 @@ const addClient = asyncHandler(async (req: AuthenticatedRequest, res: Response) 
     }
 });
 
-export { addClient };
+// update client
+const updateClient = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { clientID } = req.params;
+    const data = validateDto<UpdateClient>(updateClientSchema, req.body);
+
+    if (!clientID || !mongoose.isValidObjectId(clientID)) {
+        throw new ApiError(400, "Invalid client ID");
+    }
+
+    if (req.file) {
+        const response = await uploadToCloudinary(req.file.path);
+        if (!response || !response.secure_url) {
+            throw new ApiError(400, "Error while uploading image");
+        }
+
+        data.avatar = {
+            public_id: response.public_id,
+            secure_url: response.secure_url,
+        };
+    }
+
+    const updatedClient = await Client.findByIdAndUpdate(clientID, data, {
+        new: true,
+        runValidators: true,
+    });
+
+    if (!updatedClient) {
+        throw new ApiError(404, "Error while updating client");
+    }
+
+    return new ApiResponse(
+        200,
+        {
+            fullName: updatedClient.fullName,
+            email: updatedClient.email,
+            avatar: updatedClient.avatar?.secure_url,
+            contact: updatedClient.contact,
+        },
+        "Client updated successfully!",
+    ).send(res);
+});
+
+// get client
+const getClient = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { clientID } = req.params;
+
+    if (!clientID || !mongoose.isValidObjectId(clientID)) {
+        throw new ApiError(400, "Invalid client ID");
+    }
+
+    const client = await Client.findById(clientID).lean();
+
+    if (!client) {
+        throw new ApiError(404, "Client not found");
+    }
+
+    return new ApiResponse(
+        200,
+        {
+            fullName: client.fullName,
+            email: client.email,
+            avatar: client.avatar?.secure_url,
+            contact: client.contact,
+        },
+        "Client fetched successfully!",
+    ).send(res);
+});
+
+// delete client
+const deleteClient = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { clientID } = req.params;
+
+    if (!clientID || !mongoose.isValidObjectId(clientID)) {
+        throw new ApiError(400, "Invalid client ID");
+    }
+
+    const client = await Client.findByIdAndDelete(clientID);
+
+    if (!client) {
+        throw new ApiError(404, "Client not found");
+    }
+
+    return new ApiResponse(
+        200,
+        {
+            fullName: client.fullName,
+            email: client.email,
+            avatar: client.avatar?.secure_url,
+            contact: client.contact,
+        },
+        "Client deleted successfully!",
+    ).send(res);
+});
+
+export { addClient, updateClient, getClient, deleteClient };
