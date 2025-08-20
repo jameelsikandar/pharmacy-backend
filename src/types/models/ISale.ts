@@ -8,9 +8,9 @@ export interface ISaleItem {
 
 export interface ISale extends Document {
     clientId: Types.ObjectId | null;
+    receiptNumber: number;
     items: ISaleItem[];
     total: number;
-    date: Date;
     createdAt: Date;
     updatedAt: Date;
 }
