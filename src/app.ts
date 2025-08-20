@@ -7,6 +7,7 @@ import userRouter from "./routes/v1/user.route";
 import medicineRouter from "./routes/v1/medicine.route";
 import supplierRouter from "./routes/v1/supplier.route";
 import clientRouter from "./routes/v1/client.route";
+import saleRouter from "./routes/v1/sale.route";
 
 const app: Application = express();
 
@@ -38,6 +39,9 @@ app.use("/api/v1/suppliers", supplierRouter);
 
 // client routes
 app.use("/api/v1/clients", clientRouter);
+
+// sale routes
+app.use("/api/v1/sales", saleRouter);
 
 app.use(globalErrorHandler);
 
