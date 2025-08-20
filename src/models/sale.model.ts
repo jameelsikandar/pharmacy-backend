@@ -8,6 +8,11 @@ const saleSchema = new Schema<ISale>(
             ref: "Client",
             default: null,
         },
+        receiptNumber: {
+            type: Number,
+            required: true,
+            unique: true,
+        },
         items: [
             {
                 medicineId: {
@@ -32,14 +37,10 @@ const saleSchema = new Schema<ISale>(
             required: true,
             min: 0,
         },
-        date: {
-            type: Date,
-            default: Date.now,
-        },
     },
     {
         timestamps: true,
-    }
+    },
 );
 
 export const Sale = mongoose.model<ISale>("Sale", saleSchema);
