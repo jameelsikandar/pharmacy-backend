@@ -159,4 +159,12 @@ const deleteSupplier = asyncHandler(async (req: AuthenticatedRequest, res: Respo
     ).send(res);
 });
 
-export { addSupplier, updateSupplier, getSupplier, deleteSupplier };
+// list suppliers
+const listSuppliers = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const suppliers = await Supplier.find().sort({ createdAt: -1 });
+    console.log(suppliers);
+
+    return new ApiResponse(200, suppliers, "Suppliers fetched successfully!").send(res);
+});
+
+export { addSupplier, updateSupplier, getSupplier, deleteSupplier, listSuppliers };
