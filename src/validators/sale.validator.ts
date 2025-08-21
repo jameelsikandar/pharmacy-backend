@@ -12,8 +12,8 @@ const addSaleSchema = z.object({
         .string()
         .regex(/^[0-9a-fA-F]{24}$/)
         .optional(),
-    fullName: z.string().min(1).optional(),
-    contact: z.string().optional(),
+    fullName: z.string().min(1),
+    contact: z.string(),
     email: z.email().optional(),
     items: z.array(saleItemSchema).min(1),
 });
