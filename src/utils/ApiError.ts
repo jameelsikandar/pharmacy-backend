@@ -1,17 +1,22 @@
+// src/utils/ApiError.ts
 export class ApiError extends Error {
-    public statusCode: number;
-    public errors?: unknown[];
-    public override stack?: string;
+    statusCode: number;
+    data: any;
+    success: boolean;
+    errors: any[];
 
     constructor(
         statusCode: number,
         message = "Something went wrong",
-        errors?: unknown[],
-        stack?: string
+        errors: any[] = [],
+        stack = "",
     ) {
         super(message);
         this.statusCode = statusCode;
-        this.errors = errors || [];
+        this.data = null;
+        this.message = message;
+        this.success = false;
+        this.errors = errors;
 
         if (stack) {
             this.stack = stack;

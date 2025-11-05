@@ -1,31 +1,31 @@
-import express, { Router } from 'express';
-import { authGuard } from '../../middlewares/v1/auth.guard';
+import express, { Router } from "express";
+import { authGuard } from "../../middlewares/v1/auth.guard";
 import {
     listMedicines,
     addMedicine,
     updateMedicine,
     getMedicine,
     deleteMedicine,
-} from '../../controllers/v1/medicine.controller';
-import { upload } from '../../middlewares/shared/multer.middleware';
+} from "../../controllers/v1/medicine.controller";
+import { upload } from "../../middlewares/shared/multer.middleware";
 
 const router = Router();
 
 // ------- protected troutes --------
 
 // get all medicines
-router.route('/').get(authGuard, listMedicines);
+router.route("/list-medicines").get(authGuard, listMedicines);
 
 //add medicine
-router.route('/add-medicine').post(authGuard, upload.single('image'), addMedicine);
+router.route("/add-medicine").post(authGuard, upload.single("image"), addMedicine);
 
 // update medicine
-router.route('/update/:medicineID').patch(authGuard, upload.single('image'), updateMedicine);
+router.route("/update/:medicineID").patch(authGuard, upload.single("image"), updateMedicine);
 
 // get medicine details by id
-router.route('/profile/:medicineID').get(authGuard, getMedicine);
+router.route("/profile/:medicineID").get(authGuard, getMedicine);
 
 // delete medicine
-router.route('/delete/:medicineID').delete(authGuard, deleteMedicine);
+router.route("/delete/:medicineID").delete(authGuard, deleteMedicine);
 
 export default router;

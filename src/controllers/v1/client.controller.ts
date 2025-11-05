@@ -11,6 +11,13 @@ import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
 import fs from "fs/promises";
 import mongoose from "mongoose";
 
+// get all medicines
+const listClients = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const clients = await Client.find().sort({ createdAt: -1 });
+
+    return new ApiResponse(200, clients, "Medicines fetched successfully!").send(res);
+});
+
 // add clients
 const addClient = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const data = validateDto<AddClient>(addClientSchema, req.body);
@@ -161,4 +168,4 @@ const deleteClient = asyncHandler(async (req: AuthenticatedRequest, res: Respons
     ).send(res);
 });
 
-export { addClient, updateClient, getClient, deleteClient };
+export { addClient, updateClient, getClient, deleteClient, listClients };

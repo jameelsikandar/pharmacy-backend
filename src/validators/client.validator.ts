@@ -6,7 +6,7 @@ const addClientSchema = z.object({
     fullName: z.string().trim(),
     contact: z.string(),
     avatar: imageSchema.optional(),
-    email: z.email().toLowerCase(),
+    email: z.email().toLowerCase().optional(),
 });
 
 // update clients

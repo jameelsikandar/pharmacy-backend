@@ -1,9 +1,10 @@
-import { Types, Document } from "mongoose";
+import mongoose, { Types, Document } from "mongoose";
 import type { IImage } from "../shared/IImage";
 
 type MedicineCategory = "Tablet" | "Capsule" | "Syrup" | "Injection";
 
 interface IMedicineBase extends Document {
+    _id: mongoose.Types.ObjectId;
     fullName: string;
     price: number;
     stock: number;
