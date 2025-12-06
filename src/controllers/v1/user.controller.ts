@@ -1,15 +1,7 @@
 import type { Request, Response } from "express";
 import { User } from "../../models/user.models";
-import {
-    registerUserSchema,
-    loginSchema,
-    updateUserSchema,
-} from "../../validators/user.validator";
-import type {
-    RegisterUser,
-    LoginUser,
-    UpdateUser,
-} from "../../validators/user.validator";
+import { registerUserSchema, loginSchema, updateUserSchema } from "../../validators/user.validator";
+import type { RegisterUser, LoginUser, UpdateUser } from "../../validators/user.validator";
 import { validateDto } from "../../utils/validateDto";
 import { generateToken } from "../../utils/jwt";
 import { asyncHandler } from "../../utils/asyncHandler";
@@ -36,7 +28,13 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
             secure_url: response.secure_url,
         };
 
-        fs.unlinkSync(req.file.path); // delete file from server
+        if (req.file?.path) {
+            fs.unlink(req.file.path, (err) => {
+                if (err && err.code !== "ENOENT") {
+                    console.warn("Failed to delete temp file:", req.file?.path, err);
+                }
+            });
+        }
     }
 
     const existingUser = await User.findOne({ email: data.email });
@@ -52,7 +50,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
             email: user.email,
             contact: user.contact,
         },
-        "User Registered Successfully!"
+        "User Registered Successfully!",
     ).send(res);
 });
 
@@ -77,65 +75,56 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
             Avatar: user.avatar?.secure_url,
             Contact: user.contact,
         },
-        "Login success"
+        "Login success",
     ).send(res);
 });
 
 // update user
-const updateUser = asyncHandler(
-    async (req: AuthenticatedRequest, res: Response) => {
-        const data = validateDto<UpdateUser>(updateUserSchema, req.body);
+const updateUser = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const data = validateDto<UpdateUser>(updateUserSchema, req.body);
 
-        const id = req.user?._id;
+    const id = req.user?._id;
 
-        if (!id) {
-            throw new ApiError(401, "Unauthorized. Id not found!");
-        }
-
-        if (req.file) {
-            const response = await uploadToCloudinary(req.file.path);
-            if (!response || !response.secure_url) {
-                throw new ApiError(
-                    400,
-                    "Image uploading to Cloudinary failed!"
-                );
-            }
-            // console.log(response);
-            data.avatar = {
-                public_id: response.public_id,
-                secure_url: response.secure_url,
-            };
-
-            fs.unlinkSync(req.file.path); // delete file from server
-        }
-
-        const user = await User.findByIdAndUpdate(id, data, {
-            new: true,
-            runValidators: true,
-        }).select("-password");
-
-        if (!user) {
-            throw new ApiError(404, "User not found!");
-        }
-
-        return new ApiResponse(
-            200,
-            data,
-            "Credentials updated successfully!"
-        ).send(res);
+    if (!id) {
+        throw new ApiError(401, "Unauthorized. Id not found!");
     }
-);
+
+    if (req.file) {
+        const response = await uploadToCloudinary(req.file.path);
+        if (!response || !response.secure_url) {
+            throw new ApiError(400, "Image uploading to Cloudinary failed!");
+        }
+        // console.log(response);
+        data.avatar = {
+            public_id: response.public_id,
+            secure_url: response.secure_url,
+        };
+
+        if (req.file?.path) {
+            fs.unlink(req.file.path, (err) => {
+                if (err && err.code !== "ENOENT") {
+                    console.warn("Failed to delete temp file:", req.file?.path, err);
+                }
+            });
+        }
+    }
+
+    const user = await User.findByIdAndUpdate(id, data, {
+        new: true,
+        runValidators: true,
+    }).select("-password");
+
+    if (!user) {
+        throw new ApiError(404, "User not found!");
+    }
+
+    return new ApiResponse(200, data, "Credentials updated successfully!").send(res);
+});
 
 //get user profile
-const getUserProfile = asyncHandler(
-    async (req: AuthenticatedRequest, res: Response) => {
-        return new ApiResponse(
-            200,
-            req.user,
-            "User profile fetched successfully!"
-        ).send(res);
-    }
-);
+const getUserProfile = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    return new ApiResponse(200, req.user, "User profile fetched successfully!").send(res);
+});
 
 // logout user
 const logoutUser = asyncHandler(async (req: Request, res: Response) => {

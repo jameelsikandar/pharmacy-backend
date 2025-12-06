@@ -25,6 +25,7 @@ const listMedicines = asyncHandler(async (req: AuthenticatedRequest, res: Respon
 //  add medicine to db
 const addMedicine = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const data = validateDto<AddMedicine>(addMedicineSchema, req.body);
+    console.log("DATA: ", data);
 
     const uniqueQuery = {
         fullName: data.fullName,
@@ -43,6 +44,7 @@ const addMedicine = asyncHandler(async (req: AuthenticatedRequest, res: Response
     }
 
     if (req.file) {
+        console.log("FILE: ", req.file);
         const response = await uploadToCloudinary(req.file.path);
         if (!response || !response.secure_url) {
             throw new ApiError(400, "Image uploading to cloudinary failed!");

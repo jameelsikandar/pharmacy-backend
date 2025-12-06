@@ -7,7 +7,7 @@ import {
     listSuppliers,
 } from "../../controllers/v1/supplier.controller";
 import { authGuard } from "../../middlewares/v1/auth.guard";
-import { upload } from "../../middlewares/shared/multer.middleware";
+import { safeUpload } from "../../middlewares/shared/multer.middleware";
 
 const router = Router();
 
@@ -15,10 +15,10 @@ const router = Router();
 router.route("/list-suppliers").get(authGuard, listSuppliers);
 
 // add supplier route
-router.route("/add").post(authGuard, upload.single("avatar"), addSupplier);
+router.route("/add").post(authGuard, safeUpload, addSupplier);
 
 // update supplier
-router.route("/update/:supplierID").patch(authGuard, upload.single("avatar"), updateSupplier);
+router.route("/update/:supplierID").patch(authGuard, safeUpload, updateSupplier);
 
 // get supplier details
 router.route("/:supplierID").get(authGuard, getSupplier);

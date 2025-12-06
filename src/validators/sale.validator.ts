@@ -14,7 +14,7 @@ const addSaleSchema = z.object({
         .optional(),
     fullName: z.string().min(1),
     contact: z.string(),
-    email: z.email().optional(),
+    email: z.email().optional().nullable().catch(""),
     items: z.array(saleItemSchema).min(1),
 });
 

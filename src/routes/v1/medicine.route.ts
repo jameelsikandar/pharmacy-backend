@@ -7,7 +7,7 @@ import {
     getMedicine,
     deleteMedicine,
 } from "../../controllers/v1/medicine.controller";
-import { upload } from "../../middlewares/shared/multer.middleware";
+import { safeUpload } from "../../middlewares/shared/multer.middleware";
 
 const router = Router();
 
@@ -17,10 +17,10 @@ const router = Router();
 router.route("/list-medicines").get(authGuard, listMedicines);
 
 //add medicine
-router.route("/add-medicine").post(authGuard, upload.single("image"), addMedicine);
+router.route("/add-medicine").post(authGuard, safeUpload, addMedicine);
 
 // update medicine
-router.route("/update/:medicineID").patch(authGuard, upload.single("image"), updateMedicine);
+router.route("/update/:medicineID").patch(authGuard, safeUpload, updateMedicine);
 
 // get medicine details by id
 router.route("/profile/:medicineID").get(authGuard, getMedicine);

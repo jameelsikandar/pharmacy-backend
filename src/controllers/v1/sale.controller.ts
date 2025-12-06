@@ -14,6 +14,8 @@ import type { ISaleItem } from "../../types/models/ISale";
 
 // add sale
 const addSale = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    console.log("req.body:", req.body); // ← MUST LOG OBJECT
+    console.log("Content-Type:", req.headers["content-type"]);
     const data = validateDto<AddSale>(addSaleSchema, req.body);
 
     let clientId = data.clientId || null;
